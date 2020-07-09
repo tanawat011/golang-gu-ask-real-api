@@ -23,8 +23,8 @@ func main() {
 	e.Use(middleware.Recover())
 
 	// Group level middleware
-	g := e.Group("/body")
-	g.Use(middleware.BasicAuth(func(username, password string, c echo.Context) (bool, error) {
+	egBody := e.Group("/body")
+	egBody.Use(middleware.BasicAuth(func(username, password string, c echo.Context) (bool, error) {
 		if username == "tanawat" && password == "198777" {
 			return true, nil
 		}
@@ -42,9 +42,10 @@ func main() {
 	e.GET("/:id", ExampleGet, track)
 	e.POST("/form-urlencoded", ExamplePostForm)
 	e.POST("/multipart-form-data", ExamplePostMultiPart)
-	g.POST("/json", ExamplePostJSONBody)
-	g.POST("/xml", ExamplePostXMLBody)
-	g.POST("/form-data", ExamplePostFormDataBody)
+
+	egBody.POST("/json", ExamplePostJSONBody)
+	egBody.POST("/xml", ExamplePostXMLBody)
+	egBody.POST("/form-data", ExamplePostFormDataBody)
 
 	e.Logger.Fatal(e.Start(":8080"))
 }
