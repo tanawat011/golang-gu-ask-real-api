@@ -17,7 +17,8 @@ type ExampleDataBody struct {
 func main() {
 	e := echo.New()
 	e.GET("/:id", ExampleGet)
-	e.POST("/json-body", ExamplePostJsonBody)
+	e.POST("/json-body", ExamplePostJSONBody)
+	e.POST("/xml-body", ExamplePostXMLBody)
 	e.POST("/form-urlencoded", ExamplePostForm)
 	e.POST("/multipart-form-data", ExamplePostMultiPart)
 	e.Logger.Fatal(e.Start(":8080"))
@@ -30,13 +31,22 @@ func ExampleGet(c echo.Context) error {
 	return c.String(http.StatusOK, "Example Get with id: "+id+" and name: "+name)
 }
 
-// ExamplePostJsonBody ...
-func ExamplePostJsonBody(c echo.Context) error {
+// ExamplePostJSONBody ...
+func ExamplePostJSONBody(c echo.Context) error {
 	d := new(ExampleDataBody)
 	if err := c.Bind(d); err != nil {
 		return err
 	}
 	return c.JSON(http.StatusCreated, d)
+}
+
+// ExamplePostXMLBody ...
+func ExamplePostXMLBody(c echo.Context) error {
+	d := new(ExampleDataBody)
+	if err := c.Bind(d); err != nil {
+		return err
+	}
+	return c.XML(http.StatusCreated, d)
 }
 
 // ExamplePostForm ...
