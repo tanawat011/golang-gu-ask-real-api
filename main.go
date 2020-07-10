@@ -2,17 +2,18 @@ package main
 
 import (
 	"net/http"
+	"time"
 
+	"github.com/dgrijalva/jwt-go"
 	"github.com/labstack/echo"
 	"github.com/labstack/echo/middleware"
 
-	customMiddleware "golang-gu-ask-real-api/middleware"
+	appMiddleware "golang-gu-ask-real-api/middleware"
 )
 
-// ExampleDataBody ...
-type ExampleDataBody struct {
-	Name  string `json:"name" xml:"name" form:"name" query:"name"`
-	Email string `json:"email" xml:"email" form:"email" query:"email"`
+type loginModel struct {
+	Username string `json:"username"`
+	Password string `json:"password"`
 }
 
 func main() {
@@ -21,16 +22,42 @@ func main() {
 	// Root level middleware
 	e.Use(middleware.Logger())
 	e.Use(middleware.Recover())
-	e.Use(middleware.BasicAuth(customMiddleware.BasicAuth))
+	e.Use(middleware.BasicAuth(appMiddleware.BasicAuth))
 
-	e.GET("/:id", ExampleGet)
+	// Login route
+	e.POST("/login", login)
 
 	e.Logger.Fatal(e.Start(":8080"))
 }
 
-// ExampleGet ...
-func ExampleGet(c echo.Context) error {
-	id := c.Param("id")
-	name := c.QueryParam("name")
-	return c.String(http.StatusOK, "Example Get with id: "+id+" and name: "+name)
+// login ...
+func login(c echo.Context) error {
+	data := new(loginModel)
+	if err := c.Bind(data); err != nil {
+		return err
+	}
+
+	// Throws unauthorized error
+	if data.Username != "tanawat" || data.Password != "198777" {
+		return echo.ErrUnauthorized
+	}
+
+	// Create token
+	token := jwt.New(jwt.SigningMethodHS256)
+
+	// Set claims
+	claims := token.Claims.(jwt.MapClaims)
+	claims["name"] = "Tanawat Pinthongpan"
+	claims["admin"] = true
+	claims["exp"] = time.Now().Add(time.Hour * 72).Unix()
+
+	// Generate encoded token and send it as response.
+	t, err := token.SignedString([]byte("secret"))
+	if err != nil {
+		return err
+	}
+
+	return c.JSON(http.StatusOK, map[string]string{
+		"token": t,
+	})
 }
