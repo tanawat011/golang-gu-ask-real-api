@@ -29,3 +29,6 @@ type UserReceiver struct {
 	Email string             `json:"email,omitempty" bson:"email"`
 	Age   int                `json:"age,omitempty" bson:"age"`
 }
+
+// UserReceiverList : Model for receive list of data
+type UserReceiverList []*UserReceiver
