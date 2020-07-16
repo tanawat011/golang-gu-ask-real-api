@@ -3,6 +3,7 @@ package mongodb
 import (
 	"fmt"
 
+	"github.com/mitchellh/mapstructure"
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/bson/primitive"
 	"go.mongodb.org/mongo-driver/mongo/options"
@@ -82,11 +83,11 @@ func Find(collection string, filter primitive.D, receiver interface{}) error {
 	c := db.Collection(collection)
 
 	findOptions := options.Find()
-	findOptions.SetLimit(2)
 	cur, err := c.Find(ctx, filter, findOptions)
 	if err != nil {
 		return err
 	}
+	defer cur.Close(ctx)
 
 	results := make([]map[string]interface{}, 0)
 	for cur.Next(ctx) {
@@ -95,13 +96,12 @@ func Find(collection string, filter primitive.D, receiver interface{}) error {
 		if err != nil {
 			return err
 		}
-
 		results = append(results, elem)
 	}
 	if err := cur.Err(); err != nil {
 		return err
 	}
-	cur.Close(ctx)
+	mapstructure.Decode(results, receiver)
 	fmt.Printf("Found multiple documents (array of pointers): %+v\n", results)
 
 	return nil
