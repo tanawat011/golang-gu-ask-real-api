@@ -1,7 +1,7 @@
 package controllers
 
 import (
-	"golang-gu-ask-real-api/features/crud/models"
+	"golang-gu-ask-real-api/features/crud_with_mongo_driver/models"
 	"golang-gu-ask-real-api/utils"
 	"net/http"
 
