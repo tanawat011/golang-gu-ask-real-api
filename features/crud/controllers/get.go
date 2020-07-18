@@ -1,8 +1,7 @@
-package crud
+package controllers
 
 import (
-	"golang-gu-ask-real-api/features/crud/entities"
-	"golang-gu-ask-real-api/services/mongodb"
+	"golang-gu-ask-real-api/features/crud/models"
 	"net/http"
 
 	"github.com/labstack/echo"
@@ -11,8 +10,8 @@ import (
 )
 
 // Get : Get one record
-func Get(c echo.Context) error {
-	b := new(entities.UserFind)
+func (t *Tools) Get(c echo.Context) error {
+	b := new(models.UserFind)
 	if err := c.Bind(b); err != nil {
 		return err
 	}
@@ -20,9 +19,9 @@ func Get(c echo.Context) error {
 	objID, _ := primitive.ObjectIDFromHex(b.ID)
 	filter := bson.D{{"_id", objID}}
 
-	var receiver entities.UserReceiver
+	var receiver models.UserReceiver
 
-	if err := mongodb.FindOne("users", filter, &receiver); err != nil {
+	if err := t.db.FindOne("users", filter, &receiver); err != nil {
 		return err
 	}
 

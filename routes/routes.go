@@ -3,20 +3,23 @@ package routes
 import (
 	"github.com/labstack/echo"
 
-	"golang-gu-ask-real-api/features/crud"
+	crud "golang-gu-ask-real-api/features/crud/controllers"
 	"golang-gu-ask-real-api/features/users"
+	"golang-gu-ask-real-api/services/mongodb"
 )
 
 // RouteCollect ...
-func RouteCollect(e *echo.Echo) {
+func RouteCollect(e *echo.Echo, db *mongodb.Mongodb) {
+	controller := crud.NewCRUD(db)
+
 	g := e.Group("/oauth/v1")
 	g.POST("/login", users.UserLogin)
 
-	g2 := e.Group("/crud")
-	g2.GET("/get", crud.Get)
-	g2.GET("/get-all", crud.GetAll)
-	g2.POST("/create", crud.Create)
-	g2.PUT("/replace", crud.Replace)
-	g2.PATCH("/update", crud.Update)
-	g2.DELETE("/delete", crud.Delete)
+	gCrud := e.Group("/crud")
+	gCrud.GET("/get", controller.Get)
+	gCrud.GET("/get-all", controller.GetAll)
+	gCrud.POST("/create", controller.Create)
+	// gCrud.PUT("/replace", controller.Replace)
+	gCrud.PATCH("/update", controller.Update)
+	gCrud.DELETE("/delete", controller.Delete)
 }

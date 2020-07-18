@@ -1,21 +1,20 @@
-package crud
+package controllers
 
 import (
-	"golang-gu-ask-real-api/features/crud/entities"
-	"golang-gu-ask-real-api/services/mongodb"
+	"golang-gu-ask-real-api/features/crud/models"
 	"net/http"
 
 	"github.com/labstack/echo"
 )
 
 // Create : Create a new data
-func Create(c echo.Context) error {
-	b := new(entities.UserCreate)
+func (t *Tools) Create(c echo.Context) error {
+	b := new(models.UserCreate)
 	if err := c.Bind(b); err != nil {
 		return err
 	}
 
-	if err := mongodb.InsertOne("users", b); err != nil {
+	if err := t.db.InsertOne("users", b); err != nil {
 		return err
 	}
 

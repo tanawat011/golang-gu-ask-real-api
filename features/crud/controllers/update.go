@@ -1,9 +1,7 @@
-package crud
+package controllers
 
 import (
-	"fmt"
-	"golang-gu-ask-real-api/features/crud/entities"
-	"golang-gu-ask-real-api/services/mongodb"
+	"golang-gu-ask-real-api/features/crud/models"
 	"golang-gu-ask-real-api/utils"
 	"net/http"
 
@@ -12,8 +10,8 @@ import (
 )
 
 // Update : Filter and update a found record
-func Update(c echo.Context) error {
-	b := new(entities.UserUpdate)
+func (t *Tools) Update(c echo.Context) error {
+	b := new(models.UserUpdate)
 	if err := c.Bind(b); err != nil {
 		return err
 	}
@@ -26,10 +24,8 @@ func Update(c echo.Context) error {
 	update := bson.D{
 		{"$set", updater},
 	}
-	fmt.Println(filter)
-	fmt.Println(updater)
 
-	if err := mongodb.UpdateOne("users", filter, update); err != nil {
+	if err := t.db.UpdateOne("users", filter, update); err != nil {
 		return err
 	}
 
